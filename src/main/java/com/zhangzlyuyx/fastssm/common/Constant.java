@@ -11,7 +11,7 @@ public class Constant {
 	
 	public static final String RESPONSE_KEY_CODE = "code";
 	
-	public static final String RESPONSE_KEY_MESSAGE = "msg";
+	public static final String RESPONSE_KEY_MSG = "msg";
 	
 	public static final String RESPONSE_KEY_DATA = "data";
 	

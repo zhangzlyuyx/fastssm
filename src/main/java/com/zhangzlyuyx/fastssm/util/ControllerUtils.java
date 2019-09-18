@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,12 +27,50 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
+import com.zhangzlyuyx.fastssm.common.Constant;
+
 /**
  * Controller 操作类
  *
  */
 public class ControllerUtils {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(ControllerUtils.class);
+	
+	/**
+     * 返回成功结果和消息
+     * @param obj
+     * @param msg
+     * @return
+     */
+	public static Object returnSuccess(Object obj, String msg) {
+		com.alibaba.fastjson.JSONObject jsonObj = new com.alibaba.fastjson.JSONObject();
+		jsonObj.put(Constant.RESPONSE_KEY_CODE, Constant.RESPONSE_CODE_SUCCESS);
+		jsonObj.put(Constant.RESPONSE_KEY_MSG, msg);
+		if (obj != null) {
+			try{
+				jsonObj.put("data", obj);
+			}catch(Exception e){
+				LOGGER.error("数据异常", e);
+			}
+		}
+		LOGGER.info("输出成功结果：{}", jsonObj.toString());
+		return jsonObj;
+	}
+	
+	/**
+	 * 返回失败消息.
+	 * @param errorMsg
+	 * @return
+	 */
+	public static Object returnFail(String errorMsg) {
+		com.alibaba.fastjson.JSONObject jsonObj = new com.alibaba.fastjson.JSONObject();
+		jsonObj.put(Constant.RESPONSE_KEY_CODE, Constant.RESPONSE_CODE_ERROR);
+		jsonObj.put(Constant.RESPONSE_KEY_MSG, errorMsg);
+		LOGGER.info("输出失败结果：{}", jsonObj.toString());
+		return jsonObj;
+	}
+	
 	/**
 	 * 获取客户端ip地址
 	 * @param request
