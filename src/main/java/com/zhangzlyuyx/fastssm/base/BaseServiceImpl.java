@@ -12,6 +12,10 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.zhangzlyuyx.fastssm.mybatis.PageQuery;
+import com.zhangzlyuyx.fastssm.mybatis.PageResult;
+import com.zhangzlyuyx.fastssm.mybatis.PageCondition;
+
 import tk.mybatis.mapper.entity.Example;
 import tk.mybatis.mapper.entity.Example.Criteria;
 
@@ -92,6 +96,92 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
 		}
 		return example;
 	}
+	
+	/**
+	 * 创建 Example
+	 * @param pageQuery
+	 * @return
+	 */
+	public Example createExample(PageQuery pageQuery) {
+		Example example = new Example(this.getEntityClass());
+		if(pageQuery != null) {
+			//查询条件
+			if(pageQuery.getConditions() != null && pageQuery.getConditions().size() > 0) {
+				Criteria criteriaNew = example.createCriteria();
+				for(int i = 0; i < pageQuery.getConditions().size(); i++) {
+					PageCondition condition = pageQuery.getConditions().get(i);
+					this.criteriaOperator(example, criteriaNew, condition);
+				}
+			}
+			/**
+			 * 排序
+			 */
+			if(pageQuery.getOrderBy() != null && pageQuery.getOrderBy().length() > 0) {
+				example.setOrderByClause(pageQuery.getOrderBy());
+			}
+			//查询的属性
+			if(pageQuery.getProperties() != null && pageQuery.getProperties().length > 0) {
+				example.selectProperties(pageQuery.getProperties());
+			}
+		}
+		return example;
+	}
+	
+	/**
+	 * criteria 操作处理
+	 * @param example
+	 * @param criteriaNew
+	 * @param condition
+	 */
+	protected void criteriaOperator(Example example, Criteria criteriaNew, PageCondition condition) {
+		if(condition == null) {
+			return;
+		}
+		//当前条件处理
+		if(condition.getColumnName() != null && condition.getColumnName().length() > 0) {
+			//获取操作类型
+			String operator = (condition.getOperator() != null && condition.getOperator().length() > 0) ? condition.getOperator() : "=";
+			if(operator.equalsIgnoreCase("=")){
+				criteriaNew.andEqualTo(condition.getColumnName(), condition.getValue());
+			}else if(operator.equalsIgnoreCase("!=") || operator.equalsIgnoreCase("<>")){
+				criteriaNew.andNotEqualTo(condition.getColumnName(), condition.getValue());
+			}else if(operator.equalsIgnoreCase("like")){
+				criteriaNew.andLike(condition.getColumnName(), condition.getValue().toString());
+			}else if(operator.equalsIgnoreCase("not like")){
+				criteriaNew.andNotLike(condition.getColumnName(), condition.getValue().toString());
+			}else if(operator.equalsIgnoreCase(">")){
+				criteriaNew.andGreaterThan(condition.getColumnName(), condition.getValue());
+			}else if(operator.equalsIgnoreCase(">=")){
+				criteriaNew.andGreaterThanOrEqualTo(condition.getColumnName(), condition.getValue());
+			}else if(operator.equalsIgnoreCase("<")){
+				criteriaNew.andLessThan(condition.getColumnName(), condition.getValue());
+			}else if(operator.equalsIgnoreCase("<=")){
+				criteriaNew.andLessThanOrEqualTo(condition.getColumnName(), condition.getValue());
+			}else if(operator.equalsIgnoreCase("in")){
+				criteriaNew.andIn(condition.getColumnName(), (List<?>)condition.getValue());
+			}else if(operator.equalsIgnoreCase("not in")){
+				criteriaNew.andNotIn(condition.getColumnName(), (List<?>)condition.getValue());
+			}else if(operator.equalsIgnoreCase("isnull") || operator.equalsIgnoreCase("is null")){
+				criteriaNew.andIsNull(condition.getColumnName());
+			}else if(operator.equalsIgnoreCase("is not null")){
+				criteriaNew.andIsNotNull(condition.getColumnName());
+			}else {
+				// 其他不支持操作处理
+				if(condition.getValue() != null){
+					criteriaNew.andCondition(condition.getColumnName(), condition.getValue());
+				}else{
+					criteriaNew.andCondition(condition.getColumnName());
+				}
+			}
+		}
+		//递归嵌套条件处理
+		if(condition.getConditions() != null && condition.getConditions().size() > 0) {
+			Criteria nextCriteria = example.createCriteria();
+			for(PageCondition nextCondition : condition.getConditions()) {
+				criteriaOperator(example, nextCriteria, nextCondition);
+			}
+		}
+	}
 
 	/**
 	 * 根据实体条件查询实体列表
@@ -132,6 +222,30 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
 			example.selectProperties(properties);
 		}
 		return this.select(example, page, rows);
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public PageResult<T> select(PageQuery pageQuery){
+		PageResult<T> pageResult = new PageResult<>();
+		Example example = this.createExample(pageQuery);
+		List<T> rows;
+		if (pageQuery.getPageNo() != null && pageQuery.getPageSize() != null) {
+			int offset = (pageQuery.getPageNo() - 1) * pageQuery.getPageSize();
+			RowBounds rowBounds = new RowBounds(offset, pageQuery.getPageSize());
+			rows = this.getMapper().selectByExampleAndRowBounds(example, rowBounds);
+			pageResult.setRows(rows);
+			int total = this.getMapper().selectCountByExample(example);
+			pageResult.setTotal(Long.parseLong(String.valueOf(total)));
+		} else {
+			rows = this.getMapper().selectByExample(example);
+			pageResult.setRows(rows);
+			int total = rows.size();
+			pageResult.setTotal(Long.parseLong(String.valueOf(total)));
+		}
+		return pageResult;
 	}
 
 	/**
@@ -207,8 +321,18 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
 	/**
 	 * 查询记录数
 	 */
+	@Override
 	public int selectCount(Map<String, Object> queryMap) {
 		Example example = this.createExample(queryMap);
+		return this.getMapper().selectCountByExample(example);
+	}
+	
+	/**
+	 * 查询记录数
+	 */
+	@Override
+	public int selectCount(PageQuery pageQuery){
+		Example example = this.createExample(pageQuery);
 		return this.getMapper().selectCountByExample(example);
 	}
 	

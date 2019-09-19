@@ -3,6 +3,9 @@ package com.zhangzlyuyx.fastssm.base;
 import java.util.List;
 import java.util.Map;
 
+import com.zhangzlyuyx.fastssm.mybatis.PageQuery;
+import com.zhangzlyuyx.fastssm.mybatis.PageResult;
+
 import tk.mybatis.mapper.entity.Example;
 
 public interface BaseService<T> {
@@ -57,7 +60,14 @@ public interface BaseService<T> {
 	 * @return
 	 */
 	List<T> select(Map<String, Object> queryMap, Integer page, Integer rows, String orderByClause, String... properties);
-		
+	
+	/**
+	 * 分页数据查询
+	 * @param pageQuery
+	 * @return
+	 */
+	PageResult<T> select(PageQuery pageQuery);
+	
 	/**
 	 * 分页查询数据列表
 	 * @param example
@@ -101,6 +111,13 @@ public interface BaseService<T> {
 	 * @return
 	 */
 	int selectCount(Map<String, Object> queryMap);
+	
+	/**
+	 * 查询记录数
+	 * @param pageQuery
+	 * @return
+	 */
+	int selectCount(PageQuery pageQuery);
 	
 	/**
 	 * 查询记录数

@@ -13,7 +13,7 @@ public class ReflectUtils {
 	 * @param classz
 	 * @return
 	 */
-	public static <T> Class<T> getGenericityType(Class classz){
+	public static <T> Class<T> getGenericityType(Class<?> classz){
 		return getGenericityType(classz, 0);
 	}
 	
@@ -23,7 +23,7 @@ public class ReflectUtils {
 	 * @param index
 	 * @return
 	 */
-	public static <T> Class<T> getGenericityType(Class classz, int index){
+	public static <T> Class<T> getGenericityType(Class<?> classz, int index){
 		Class<T> cls = (Class<T>) ((ParameterizedType)classz.getGenericSuperclass()).getActualTypeArguments()[index];
 		return cls;
 	}
