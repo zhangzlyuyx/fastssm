@@ -250,11 +250,6 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
 
 	/**
 	 * 分页查询实体列表
-	 * 
-	 * @param example
-	 * @param pageNo
-	 * @param pageSize
-	 * @return
 	 */
 	@Override
 	public List<T> select(Example example, Integer page, Integer rows) {

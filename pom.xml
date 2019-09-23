@@ -7,8 +7,29 @@
 	<version>1.0.0</version>
 	<packaging>jar</packaging>
 	<name>fastssm</name>
-	<url>http://maven.apache.org</url>
+	<url>https://github.com/zhangzlyuyx/fastssm</url>
 	<description>Spring + SpringMVC + MyBatis</description>
+	
+	<licenses>
+		<license>
+			<name>Mulan Permissive Software License，Version 1</name>
+			<url>http://license.coscl.org.cn/MulanPSL</url>
+		</license>
+	</licenses>
+	
+	<developers>
+		<developer>
+			<name>zhangzlyuyx</name>
+			<email>admin@zhangzlyuyx.com</email>
+		</developer>
+	</developers>
+	
+	<scm>
+		<connection>scm:git@github.com:zhangzlyuyx/fastssm.git</connection>
+		<developerConnection>scm:git@github.com:zhangzlyuyx/fastssm.git</developerConnection>
+		<url>https://github.com/zhangzlyuyx/fastssm</url>
+	</scm>
+	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -27,7 +48,6 @@
 	</properties>
 
 	<dependencies>
-
 		<!-- spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -72,9 +92,9 @@
 			<version>${mybatis.version}</version>
 		</dependency>
 		<dependency>
-		  <groupId>org.mybatis</groupId>
-		  <artifactId>mybatis-spring</artifactId>
-		  <version>${mybatis-spring.version}</version>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-spring</artifactId>
+			<version>${mybatis-spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>tk.mybatis</groupId>
@@ -88,12 +108,12 @@
 			<artifactId>shiro-spring</artifactId>
 			<version>${shiro.version}</version>
 		</dependency>
-		
+
 		<!-- jjwt -->
 		<dependency>
-		  <groupId>io.jsonwebtoken</groupId>
-		  <artifactId>jjwt</artifactId>
-		  <version>${jjwt.version}</version>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>${jjwt.version}</version>
 		</dependency>
 
 		<!-- fastjson -->
@@ -111,15 +131,73 @@
 		</dependency>
 
 	</dependencies>
-	
+
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					
+					
+					
+				</plugins>
+			</build>
+			<distributionManagement>
+				<snapshotRepository>
+					<id>oss</id>
+					<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+				</snapshotRepository>
+				<repository>
+					<id>oss</id>
+					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+				</repository>
+			</distributionManagement>
+		</profile>
+	</profiles>
+
 	<build>
 		<plugins>
+			<!-- compiler -->
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<source>${maven.compiler.source}</source>
 					<target>${maven.compiler.target}</target>
+					<encoding>utf8</encoding>
 				</configuration>
+			</plugin>
+			<!-- javadoc -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<charset>UTF-8</charset>
+					<encoding>UTF-8</encoding>
+					<docencoding>UTF-8</docencoding>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- source -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

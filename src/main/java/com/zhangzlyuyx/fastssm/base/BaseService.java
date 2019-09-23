@@ -71,8 +71,8 @@ public interface BaseService<T> {
 	/**
 	 * 分页查询数据列表
 	 * @param example
-	 * @param pageNo
-	 * @param pageSize
+	 * @param page 分页序号
+	 * @param rows 每页记录数
 	 * @return
 	 */
 	List<T> select(Example example, Integer page, Integer rows);
