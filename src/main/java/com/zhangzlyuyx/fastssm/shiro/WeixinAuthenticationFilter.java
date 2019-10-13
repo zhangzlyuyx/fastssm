@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.zhangzlyuyx.fastssm.base.BaseAuthenticationService;
 
@@ -27,6 +31,8 @@ import com.zhangzlyuyx.fastssm.base.BaseAuthenticationService;
 public class WeixinAuthenticationFilter extends FormAuthenticationFilter {
 
 	public static String NAME_USER_TYPE = "weixin";
+	
+	public static String NAME_OPENID = "openid";
 	
 	/**
 	 * 用户类型
@@ -42,6 +48,18 @@ public class WeixinAuthenticationFilter extends FormAuthenticationFilter {
 	 */
 	@Autowired(required = false)
 	private BaseAuthenticationService authenticationService;
+	
+	public BaseAuthenticationService getAuthenticationService(ServletContext servletContext) {
+		if(this.authenticationService == null) {
+			WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
+    		this.authenticationService = webApplicationContext.getBean(BaseAuthenticationService.class);
+		}
+		return this.authenticationService;
+	}
+	
+	public void setAuthenticationService(BaseAuthenticationService authenticationService) {
+		this.authenticationService = authenticationService;
+	}
 	
 	/**
 	 * 微信 OAuth 2.0 网页授权地址 
@@ -143,9 +161,9 @@ public class WeixinAuthenticationFilter extends FormAuthenticationFilter {
 		token.setUserType(this.userType);
 		token.getRequestParams().put("code", code);
 		token.getRequestParams().put("state", state);
-		token.getRequestParams().put("openid", openid);
+		token.getRequestParams().put(NAME_OPENID, openid);
 		//获取证认信息
-		ShiroToken authenticationInfo = this.authenticationService.getAuthenticationInfo(token);
+		ShiroToken authenticationInfo = this.getAuthenticationService(request.getServletContext()).getAuthenticationInfo(token);
 		if(authenticationInfo == null) {
 			super.redirectToLogin(request, response);
 			return;

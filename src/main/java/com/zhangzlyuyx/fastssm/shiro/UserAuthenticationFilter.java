@@ -3,17 +3,23 @@ package com.zhangzlyuyx.fastssm.shiro;
 import java.io.IOException;
 import java.util.Enumeration;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.web.filter.AccessControlFilter;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.zhangzlyuyx.fastssm.base.BaseAuthenticationService;
 
@@ -23,12 +29,18 @@ import com.zhangzlyuyx.fastssm.base.BaseAuthenticationService;
  */
 public class UserAuthenticationFilter extends FormAuthenticationFilter {
 
-	private static String NAME_USER_TYPE = "user"; 
+	public static String NAME_USERTYPE = "user";
+	
+	public static String NAME_USERNAME = FormAuthenticationFilter.DEFAULT_USERNAME_PARAM;
+	
+	public static String NAME_PASSWORD = FormAuthenticationFilter.DEFAULT_PASSWORD_PARAM;
+	
+	public static String NAME_REMEMBER = FormAuthenticationFilter.DEFAULT_REMEMBER_ME_PARAM;
 	
 	/**
 	 * 用户类型
 	 */
-	private String userType = NAME_USER_TYPE;
+	private String userType = NAME_USERTYPE;
 	
 	public void setUserType(String userType) {
 		this.userType = userType;
@@ -39,6 +51,18 @@ public class UserAuthenticationFilter extends FormAuthenticationFilter {
 	 */
 	@Autowired(required = false)
 	private BaseAuthenticationService authenticationService;
+	
+	public BaseAuthenticationService getAuthenticationService(ServletContext servletContext) {
+		if(this.authenticationService == null) {
+			WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
+    		this.authenticationService = webApplicationContext.getBean(BaseAuthenticationService.class);
+		}
+		return this.authenticationService;
+	}
+	
+	public void setAuthenticationService(BaseAuthenticationService authenticationService) {
+		this.authenticationService = authenticationService;
+	}
 	
 	@Override
 	protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
@@ -63,7 +87,6 @@ public class UserAuthenticationFilter extends FormAuthenticationFilter {
 	
 	@Override
 	protected void redirectToLogin(ServletRequest request, ServletResponse response) throws IOException {
-		// TODO Auto-generated method stub
 		super.redirectToLogin(request, response);
 	}
 	
@@ -78,10 +101,25 @@ public class UserAuthenticationFilter extends FormAuthenticationFilter {
 		ShiroToken token = new ShiroToken();
 		token.setUserType(this.userType);
 		token.setHost(host);
-		token.getRequestParams().put(this.getUsernameParam(), username);
-		token.getRequestParams().put(this.getPasswordParam(), password);
-		token.getRequestParams().put(this.getRememberMeParam(), String.valueOf(rememberMe));
+		token.getRequestParams().put(getUsernameParam(), username);
+		token.getRequestParams().put(getPasswordParam(), password);
+		token.getRequestParams().put(getRememberMeParam(), String.valueOf(rememberMe));
 		return token;
+	}
+	
+	@Override
+	public String getUsernameParam() {
+		return NAME_USERNAME;
+	}
+	
+	@Override
+	public String getPasswordParam() {
+		return NAME_PASSWORD;
+	}
+	
+	@Override
+	public String getRememberMeParam() {
+		return NAME_REMEMBER;
 	}
 	
 	@Override
@@ -101,19 +139,24 @@ public class UserAuthenticationFilter extends FormAuthenticationFilter {
         		token.getRequestParams().put(parameterName, parameterValue);
         	}
         	//获取认证信息
-        	ShiroToken authenticationInfo = this.authenticationService.getAuthenticationInfo(token);
+        	ShiroToken authenticationInfo = this.getAuthenticationService(request.getServletContext()).getAuthenticationInfo(token);
         	if(authenticationInfo == null || !authenticationInfo.isAuthenticated()) {
         		return onLoginFailure(authenticationInfo, new AuthenticationException(authenticationInfo != null ? authenticationInfo.getAuthenticateResult() : ""), request, response);
         	}
         	if(authenticationInfo.getPrincipal() == null) {
         		authenticationInfo.setPrincipal(authenticationInfo.getUserId());
         	}
-        	if(authenticationInfo.getCredentials() != null) {
+        	if(authenticationInfo.getCredentials() == null) {
         		authenticationInfo.setCredentials(authenticationInfo.getUserId());
         	}
         	Subject subject = getSubject(request, response);
             subject.login(authenticationInfo);
-            return onLoginSuccess(token, subject, request, response);
+            //如果当前为get请求，则执行url重定向
+    		if(((HttpServletRequest)request).getMethod().equalsIgnoreCase(AccessControlFilter.GET_METHOD)){
+    			return super.onLoginSuccess(token, subject, request, response);
+    		}else {
+    			return true;
+    		}
 		} catch (AuthenticationException e) {
 			return onLoginFailure(null, e, request, response);
 		}
@@ -130,6 +173,6 @@ public class UserAuthenticationFilter extends FormAuthenticationFilter {
 	protected boolean onLoginFailure(AuthenticationToken token, AuthenticationException e, ServletRequest request,
 			ServletResponse response) {
 		request.setAttribute(this.getFailureKeyAttribute(), e);
-		return super.onLoginFailure(token, e, request, response);
+		return true;
 	}
 }
