@@ -3,6 +3,7 @@ package com.zhangzlyuyx.fastssm.base;
 import java.beans.PropertyEditorSupport;
 import java.lang.reflect.ParameterizedType;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.HtmlUtils;
 
+import com.alibaba.fastjson.JSONObject;
+import com.zhangzlyuyx.fastssm.mybatis.PageCondition;
 import com.zhangzlyuyx.fastssm.mybatis.PageQuery;
 import com.zhangzlyuyx.fastssm.util.ControllerUtils;
 import com.zhangzlyuyx.fastssm.util.DateUtils;
@@ -79,7 +82,7 @@ public abstract class BaseController<T> {
 	
 	/**
 	 * 获取列表页url
-	 * @return
+	 * @return 返回url
 	 */
 	public String getListPageUrl() {
 		String targetName = this.getTargetName();
@@ -88,8 +91,8 @@ public abstract class BaseController<T> {
 	
 	/**
 	 * 显示列表页
-	 * @param request
-	 * @return
+	 * @param request 请求对象
+	 * @return 返回 view
 	 */
 	@RequestMapping("/showList")
 	public String showList(HttpServletRequest request){
@@ -98,13 +101,42 @@ public abstract class BaseController<T> {
 	
 	/**
 	 * 获取列表
-	 * @param request
-	 * @param pageQuery
-	 * @return
+	 * @param request 请求对象
+	 * @return 返回json结果
 	 */
 	@RequestMapping("/list")
 	@ResponseBody
-	public Object list(HttpServletRequest request, PageQuery pageQuery) {
+	public Object list(HttpServletRequest request) {
+		PageQuery pageQuery = new PageQuery();
+		//pageNo
+		String pageNo = request.getParameter("pageNo");
+		if(!StringUtils.isEmpty(pageNo)) {
+			pageQuery.setPageNo(Integer.parseInt(pageNo));
+		}
+		//pageSize
+		String pageSize = request.getParameter("pageSize");
+		if(!StringUtils.isEmpty(pageSize)) {
+			pageQuery.setPageSize(Integer.parseInt(pageSize));
+		}
+		//orderBy
+		String orderBy = request.getParameter("orderBy");
+		if(!StringUtils.isEmpty(orderBy)) {
+			pageQuery.setOrderBy(orderBy);
+		}
+		//conditions
+		String conditions = request.getParameter("conditions");
+		if(!StringUtils.isEmpty(conditions)) {
+			List<PageCondition> conditionList = JSONObject.parseArray(conditions, PageCondition.class);
+			pageQuery.setConditions(conditionList);
+		}
+		//properties
+		String properties = request.getParameter("properties");
+		if(!StringUtils.isEmpty(properties)) {
+			List<String> propertieList = JSONObject.parseArray(properties, String.class);
+			String[] propertieArray = new String[propertieList.size()];
+			propertieList.toArray(propertieArray);
+			pageQuery.setProperties(propertieArray);
+		}
 		return this.getTargetService().select(pageQuery);
 	}
 	
@@ -119,7 +151,7 @@ public abstract class BaseController<T> {
 	
 	/**
 	 * 显示添加页
-	 * @param request
+	 * @param request 请求对象 
 	 * @return
 	 */
 	@RequestMapping("/addPage")
@@ -129,9 +161,9 @@ public abstract class BaseController<T> {
 	
 	/**
 	 * 保存
-	 * @param request
-	 * @param entity
-	 * @return
+	 * @param request 请求对象
+	 * @param entity 实体
+	 * @return 返回结果
 	 */
 	@RequestMapping("/save")
 	@ResponseBody
@@ -151,9 +183,9 @@ public abstract class BaseController<T> {
 	
 	/**
 	 * 显示编辑页
-	 * @param request
-	 * @param id
-	 * @return
+	 * @param request 请求对象
+	 * @param id id
+	 * @return 返回 view
 	 */
 	@RequestMapping("/editPage")
 	public String showEditPage(HttpServletRequest request, Long id){
@@ -165,9 +197,9 @@ public abstract class BaseController<T> {
 	
 	/**
 	 * 更新
-	 * @param request
-	 * @param entity
-	 * @return
+	 * @param request 请求对象
+	 * @param entity 实体
+	 * @return 返回结果
 	 */
 	@RequestMapping("/update")
 	@ResponseBody
@@ -181,9 +213,9 @@ public abstract class BaseController<T> {
 	
 	/**
 	 * 删除
-	 * @param request
-	 * @param ids
-	 * @return
+	 * @param request 请求对象
+	 * @param ids id集合
+	 * @return 返回结果
 	 */
 	@RequestMapping("/delete")
 	@ResponseBody

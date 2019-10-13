@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * 分页结果
  *
- * @param <T>
+ * @param <T> 泛型
  */
 public class PageResult<T> implements Serializable {
 

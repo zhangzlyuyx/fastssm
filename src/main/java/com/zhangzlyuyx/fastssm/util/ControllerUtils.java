@@ -30,7 +30,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import com.zhangzlyuyx.fastssm.common.Constant;
 
 /**
- * Controller 操作类
+ * Controller 操作 类
  *
  */
 public class ControllerUtils {
@@ -39,9 +39,9 @@ public class ControllerUtils {
 	
 	/**
      * 返回成功结果和消息
-     * @param obj
-     * @param msg
-     * @return
+     * @param obj 对象
+     * @param msg 消息内容
+     * @return 返回json结果 
      */
 	public static Object returnSuccess(Object obj, String msg) {
 		com.alibaba.fastjson.JSONObject jsonObj = new com.alibaba.fastjson.JSONObject();
@@ -60,8 +60,8 @@ public class ControllerUtils {
 	
 	/**
 	 * 返回失败消息.
-	 * @param errorMsg
-	 * @return
+	 * @param errorMsg 错误消息
+	 * @return 返回json结果 
 	 */
 	public static Object returnFail(String errorMsg) {
 		com.alibaba.fastjson.JSONObject jsonObj = new com.alibaba.fastjson.JSONObject();
@@ -73,8 +73,8 @@ public class ControllerUtils {
 	
 	/**
 	 * 获取客户端ip地址
-	 * @param request
-	 * @return
+	 * @param request 请求对象
+	 * @return 返回ip
 	 */
 	public static String getRemoteAddr(HttpServletRequest request){
 		//代理进来，则透过防火墙获取真实IP地址
@@ -103,8 +103,8 @@ public class ControllerUtils {
 	
 	/**
 	 * 获取 shiro 登录失败信息
-	 * @param request
-	 * @return
+	 * @param request 请求对象
+	 * @return 返回异常信息
 	 */
 	public static Object getShiroLoginFailure(HttpServletRequest request){
 		Object loginError =  request.getAttribute(FormAuthenticationFilter.DEFAULT_ERROR_KEY_ATTRIBUTE_NAME);
@@ -113,8 +113,8 @@ public class ControllerUtils {
 	
 	/**
 	 * 设置 shiro 登录失败信息
-	 * @param request
-	 * @param e
+	 * @param request 请求对象
+	 * @param e 异常信息
 	 */
 	public static void setShiroLoginFailure(HttpServletRequest request, AuthenticationException e){
 		request.setAttribute(FormAuthenticationFilter.DEFAULT_ERROR_KEY_ATTRIBUTE_NAME, e);
@@ -122,8 +122,8 @@ public class ControllerUtils {
 	
 	/**
 	 * 获取请求上传的文件集合
-	 * @param request 请求
-	 * @return
+	 * @param request 请求对象 
+	 * @return 返回文件对象集合 
 	 */
 	public static List<MultipartFile> getMultipartFiles(HttpServletRequest request){
 		List<MultipartFile> multipartFiles = new ArrayList<MultipartFile>();
@@ -152,8 +152,8 @@ public class ControllerUtils {
 	 * 文件下载请求
 	 * @param file 文件对象
 	 * @param fileName 输出的文件名称(可空)
-	 * @return
-	 * @throws IOException
+	 * @return 返回字节数组
+	 * @throws IOException 异常信息
 	 */
 	public static ResponseEntity<byte[]> downloadFile(File file, String fileName) throws IOException{
 		if (!file.isFile() || !file.exists()) {
@@ -168,10 +168,10 @@ public class ControllerUtils {
 	
 	/**
 	 * 文件下载请求
-	 * @param buffer
+	 * @param buffer 下载的字节数组
 	 * @param fileName 输出的文件名称
-	 * @return
-	 * @throws IOException
+	 * @return 返回字节数组
+	 * @throws IOException 异常信息
 	 */
 	public static ResponseEntity<byte[]> downloadFile(byte[] buffer, String fileName) throws IOException{
 		if(StringUtils.isEmpty(fileName)){
@@ -190,7 +190,7 @@ public class ControllerUtils {
 	 * @param response 响应对象
 	 * @param file 文件
 	 * @param fileName 输出文件名称
-	 * @throws IOException
+	 * @throws IOException 异常信息
 	 * @return 返回下载字节数
 	 */
 	public static long downloadFile(HttpServletResponse response, File file, String fileName) throws IOException{
@@ -236,7 +236,7 @@ public class ControllerUtils {
 	 * @param response 响应对象
 	 * @param inputStream 输入流
 	 * @param fileName 输出文件名称
-	 * @throws IOException
+	 * @throws IOException 异常信息 
 	 * @return 返回下载字节数
 	 */
 	public static long downloadFile(HttpServletResponse response, InputStream inputStream, String fileName) throws IOException{

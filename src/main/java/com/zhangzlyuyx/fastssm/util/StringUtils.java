@@ -10,8 +10,8 @@ public class StringUtils {
 
 	/**
 	 * 判断是否为空字符串
-	 * @param str
-	 * @return
+	 * @param str 字符串
+	 * @return 返回字符串
 	 */
 	public static boolean isEmpty(CharSequence str){
 		return StrUtil.isEmpty(str);
@@ -19,8 +19,8 @@ public class StringUtils {
 	
 	/**
 	 * 去除首尾空格
-	 * @param str
-	 * @return
+	 * @param str 字符串
+	 * @return 返回字符串
 	 */
 	public static String trim(CharSequence str){
 		return StrUtil.trim(str);
@@ -28,9 +28,9 @@ public class StringUtils {
 	
 	/**
 	 * 去除前缀
-	 * @param str
-	 * @param prefix
-	 * @return
+	 * @param str 字符串
+	 * @param prefix 前缀
+	 * @return 返回字符串
 	 */
 	public static String trimStart(CharSequence str, CharSequence prefix){
 		return StrUtil.removePrefix(str, prefix);
@@ -38,9 +38,9 @@ public class StringUtils {
 	
 	/**
 	 * 去除后缀
-	 * @param str
-	 * @param suffix 
-	 * @return
+	 * @param str 字符串
+	 * @param suffix 后缀
+	 * @return 返回字符串
 	 */
 	public static String trimEnd(CharSequence str, CharSequence suffix){
 		return StrUtil.removeSuffix(str, suffix);
@@ -48,9 +48,9 @@ public class StringUtils {
 	
 	/**
 	 * 格式化字符串
-	 * @param format
-	 * @param args
-	 * @return
+	 * @param format 格式
+	 * @param args 参数列表
+	 * @return 返回字符串
 	 */
 	public static String format(String format, Object... args){
 		if(format == null){
@@ -65,9 +65,9 @@ public class StringUtils {
 
 	/**
 	 * 格式化字符串
-	 * @param format
-	 * @param args
-	 * @return
+	 * @param format 格式
+	 * @param args 参数
+	 * @return 返回字符串
 	 */
 	public static String formatSql(String format, Object... args){
 		if(format.contains("{0}")){

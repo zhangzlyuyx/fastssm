@@ -13,7 +13,7 @@ public class DateUtils {
 
 	/**
 	 * 获取当前时间
-	 * @return
+	 * @return 返回时间
 	 */
 	public static Date getDate(){
 		return DateUtil.date();
@@ -21,12 +21,12 @@ public class DateUtils {
 	
 	/**
 	 * 获取时间
-	 * @param date
+	 * @param date 时间
 	 * @param hour 时
 	 * @param minute 分
 	 * @param second 秒钟
 	 * @param millisecond 毫秒
-	 * @return
+	 * @return 返回时间
 	 */
 	public static Date getDate(Date date, int hour, int minute, int second, int millisecond){
 		Calendar calendar = Calendar.getInstance();
@@ -40,8 +40,8 @@ public class DateUtils {
 	
 	/**
 	 * 字符转日期
-	 * @param dateStr
-	 * @return
+	 * @param dateStr 要解析的时间字符串
+	 * @return 返回时间
 	 */
 	public static Date parse(String dateStr){
 		return DateUtil.parse(dateStr);
@@ -49,9 +49,9 @@ public class DateUtils {
 	
 	/**
 	 * 字符转日期
-	 * @param dateStr
-	 * @param format
-	 * @return
+	 * @param dateStr 要解析的时间字符串
+	 * @param format 时间格式
+	 * @return 返回时间
 	 */
 	public static Date parse(String dateStr, String format){
 		return DateUtil.parse(dateStr, format);
@@ -59,9 +59,9 @@ public class DateUtils {
 	
 	/**
 	 * 日期转字符
-	 * @param date
-	 * @param format
-	 * @return
+	 * @param date 时间
+	 * @param format 格式
+	 * @return 返回时间字符串
 	 */
 	public static String format(Date date, String format){
 		return DateUtil.format(date, format);
@@ -69,8 +69,8 @@ public class DateUtils {
 	
 	/**
 	 * 日期转字符(yyyy-MM-dd)
-	 * @param date
-	 * @return
+	 * @param date 时间
+	 * @return 返回时间字符串
 	 */
 	public static String formatDate(Date date){
 		return DateUtil.formatDate(date);
@@ -78,8 +78,8 @@ public class DateUtils {
 	
 	/**
 	 * 日期转字符(HH:mm:ss)
-	 * @param date
-	 * @return
+	 * @param date 时间
+	 * @return 返回时间字符串
 	 */
 	public static String formatTime(Date date){
 		return DateUtil.formatTime(date);
@@ -87,8 +87,8 @@ public class DateUtils {
 	
 	/**
 	 * 日期转字符(yyyy-MM-dd HH:mm:ss)
-	 * @param date
-	 * @return
+	 * @param date 时间
+	 * @return 返回时间字符串
 	 */
 	public static String formatDateTime(Date date){
 		return DateUtil.formatDateTime(date);

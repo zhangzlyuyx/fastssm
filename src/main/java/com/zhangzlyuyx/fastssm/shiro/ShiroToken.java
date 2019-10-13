@@ -306,7 +306,7 @@ public class ShiroToken implements AuthenticationToken {
 	
 	/**
 	 * 获取 ShiroToken 实例
-	 * @return
+	 * @return 返回 ShiroToken 实例
 	 */
 	public static ShiroToken getInstance(){
 		try {
