@@ -219,12 +219,17 @@ public abstract class BaseController<T> {
 	 */
 	@RequestMapping("/delete")
 	@ResponseBody
-	public Object delete(HttpServletRequest request, @RequestParam(value = "ids") Long[] ids) {
-		if(ids == null || ids.length == 0) {
+	public Object delete(HttpServletRequest request) {
+		String ids = request.getParameter("id");
+		if(StringUtils.isEmpty(ids)) {
+			ids = request.getParameter("ids");
+		}
+		if(StringUtils.isEmpty(ids)) {
 			return ControllerUtils.returnFail("请选择需要删除的记录!");
 		}
+		List<Long> idArray = JSONObject.parseArray(ids, Long.class);
 		int count = 0;
-		for(Long id : ids) {
+		for(Long id : idArray) {
 			count += this.getTargetService().deleteByPrimaryKey(id);
 		}
 		if(count > 0) {

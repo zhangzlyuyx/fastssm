@@ -231,6 +231,9 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
 	public PageResult<T> select(PageQuery pageQuery){
 		PageResult<T> pageResult = new PageResult<>();
 		Example example = this.createExample(pageQuery);
+		if(pageQuery.getProperties() != null && pageQuery.getProperties().length > 0) {
+			example.selectProperties(pageQuery.getProperties());
+		}
 		List<T> rows;
 		if (pageQuery.getPageNo() != null && pageQuery.getPageSize() != null) {
 			int offset = (pageQuery.getPageNo() - 1) * pageQuery.getPageSize();
