@@ -142,7 +142,7 @@ public abstract class BaseController<T> {
 	
 	/**
 	 * 获取添加页url
-	 * @return
+	 * @return 返回url
 	 */
 	public String getAddPageUrl() {
 		String targetName = this.getTargetName();
@@ -152,7 +152,7 @@ public abstract class BaseController<T> {
 	/**
 	 * 显示添加页
 	 * @param request 请求对象 
-	 * @return
+	 * @return 返回view
 	 */
 	@RequestMapping("/addPage")
 	public String showAddPage(HttpServletRequest request){
@@ -174,7 +174,7 @@ public abstract class BaseController<T> {
 	
 	/**
 	 * 获取编辑页url
-	 * @return
+	 * @return 返回url
 	 */
 	public String getEditPageUrl() {
 		String targetName = this.getTargetName();
@@ -214,7 +214,6 @@ public abstract class BaseController<T> {
 	/**
 	 * 删除
 	 * @param request 请求对象
-	 * @param ids id集合
 	 * @return 返回结果
 	 */
 	@RequestMapping("/delete")
