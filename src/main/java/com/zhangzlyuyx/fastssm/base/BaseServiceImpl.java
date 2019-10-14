@@ -2,10 +2,18 @@ package com.zhangzlyuyx.fastssm.base;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.ibatis.builder.StaticSqlSource;
+import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.mapping.ResultMap;
+import org.apache.ibatis.mapping.ResultMapping;
+import org.apache.ibatis.mapping.SqlCommandType;
+import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -28,12 +36,60 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
 	 * 获取当前sql会话
 	 * @return
 	 */
-	public SqlSession geSqlSession() {
+	@Override
+	public SqlSession getSqlSession() {
 		SqlSession sqlSession = SqlSessionUtils.getSqlSession(sqlSessionFactory);
 		if(sqlSession == null){
 			sqlSession = sqlSessionFactory.openSession();
 		}
 		return sqlSession;
+	}
+	
+	/**
+	 * 获取查询 MappedStatement Id
+	 * @param sqlSession sql会话
+	 * @param sql sql语句
+	 * @param resultType 结果类型
+	 * @return 返回 MappedStatement Id
+	 */
+	public String getSelectMappedStatementId(SqlSession sqlSession, String sql, final Class<?> resultType) {
+		final Configuration configuration = sqlSession.getConfiguration();
+		final String id = new StringBuilder(SqlCommandType.SELECT.toString()).append(".").append(sql.hashCode()).toString();
+		StaticSqlSource sqlSource = new StaticSqlSource(configuration, sql);
+		if(configuration.hasStatement(id, false)) {
+			return id;
+		}else {
+			MappedStatement ms = new MappedStatement.Builder(configuration, id, sqlSource, SqlCommandType.SELECT).resultMaps(new ArrayList<ResultMap>() {
+            	{
+                	add(new ResultMap.Builder(configuration, "defaultResultMap", resultType, new ArrayList<ResultMapping>(0)).build());
+            	}
+           	}).build();
+            //缓存
+            configuration.addMappedStatement(ms);
+		}
+		return id;
+	}
+	
+	/**
+	 * 查询单值
+	 * @param sql
+	 * @param resultType
+	 * @return
+	 */
+	@Override
+	public Object selectOne(String sql, Class<?> resultType) {
+		SqlSession sqlSession = this.getSqlSession();
+		String sqlId = this.getSelectMappedStatementId(sqlSession, sql, Date.class);
+		return sqlSession.selectOne(sqlId);
+	}
+	
+	/**
+	 * 获取服务器时间
+	 */
+	@Override
+	public Date getDate() {
+		Object value =  this.selectOne("select sysdate()", Date.class);
+		return (Date)value;
 	}
 	
 	/**
@@ -182,7 +238,7 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
 			}
 		}
 	}
-
+	
 	/**
 	 * 根据实体条件查询实体列表
 	 * @param record

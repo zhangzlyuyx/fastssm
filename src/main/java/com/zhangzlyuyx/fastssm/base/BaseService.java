@@ -1,7 +1,10 @@
 package com.zhangzlyuyx.fastssm.base;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.ibatis.session.SqlSession;
 
 import com.zhangzlyuyx.fastssm.mybatis.PageQuery;
 import com.zhangzlyuyx.fastssm.mybatis.PageResult;
@@ -10,6 +13,26 @@ import tk.mybatis.mapper.entity.Example;
 
 public interface BaseService<T> {
 
+	/**
+	 * 获取 sqlSession
+	 * @return
+	 */
+	SqlSession getSqlSession();
+	
+	/**
+	 * 查询单值
+	 * @param sql sql语句
+	 * @param resultType 结果类类型
+	 * @return 结果
+	 */
+	Object selectOne(String sql, Class<?> resultType);
+	
+	/**
+	 * 获取服务器时间
+	 * @return
+	 */
+	Date getDate();
+	
 	/**
 	 * 获取实体类型
 	 * @return 返回泛型
