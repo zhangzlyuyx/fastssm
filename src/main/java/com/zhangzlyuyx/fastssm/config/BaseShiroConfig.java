@@ -20,11 +20,20 @@ import com.zhangzlyuyx.fastssm.shiro.WeixinAuthenticationFilter;
  */
 public class BaseShiroConfig {
 
+	/**
+	 * shiroRealm
+	 * @return
+	 */
 	@Bean("shiroRealm")
     public ShiroRealm shiroRealm() {
         return new ShiroRealm();
     }
 	
+	/**
+	 * securityManager
+	 * @param shiroRealm
+	 * @return
+	 */
 	@Bean("securityManager")
     public DefaultWebSecurityManager securityManager(@Qualifier("shiroRealm") ShiroRealm shiroRealm) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
@@ -32,6 +41,11 @@ public class BaseShiroConfig {
         return securityManager;
     }
 	
+	/**
+	 * shiroFilterFactory
+	 * @param securityManager 事务管理
+	 * @return
+	 */
 	 @Bean("shiroFilterFactory")
 	 public ShiroFilterFactoryBean shiroFilterFactoryBean(@Qualifier("securityManager") SecurityManager securityManager) {
 		 Map<String, String> filterChainDefinitionMap = this.createFilterChainDefinitionMap();
@@ -68,6 +82,7 @@ public class BaseShiroConfig {
         shiroFilterFactory.setSecurityManager(securityManager);
         shiroFilterFactory.setLoginUrl("/login");
         shiroFilterFactory.setSuccessUrl("/index");
+        shiroFilterFactory.setUnauthorizedUrl("/unauthorized");
         
         //用户登录过滤器
         UserAuthenticationFilter userAuthenticationFilter = this.createUserAuthenticationFilter();

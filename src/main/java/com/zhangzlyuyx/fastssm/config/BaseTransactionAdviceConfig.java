@@ -20,6 +20,12 @@ import org.springframework.transaction.interceptor.TransactionInterceptor;
 public class BaseTransactionAdviceConfig {
 
 	/**
+	 * transactionManager
+	 */
+	@Autowired
+    private PlatformTransactionManager transactionManager;
+	
+	/**
 	 * REQUIRED
 	 */
 	protected DefaultTransactionAttribute txAttr_REQUIRED = new DefaultTransactionAttribute(Propagation.REQUIRED.value());
@@ -29,15 +35,20 @@ public class BaseTransactionAdviceConfig {
 	 */
 	protected DefaultTransactionAttribute txAttr_SUPPORTS = new DefaultTransactionAttribute(Propagation.SUPPORTS.value());
 	
-	@Autowired
-    private PlatformTransactionManager transactionManager;
-	
+	/**
+	 * Advice
+	 * @return
+	 */
 	@Bean
     public TransactionInterceptor txAdvice() {
 		NameMatchTransactionAttributeSource source = this.getTransactionAttributeSource();
 		return new TransactionInterceptor(transactionManager, source);
 	}
 	
+	/**
+	 * Advisor
+	 * @return
+	 */
 	@Bean
     public Advisor txAdviceAdvisor() {
         AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
