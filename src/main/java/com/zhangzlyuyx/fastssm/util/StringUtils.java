@@ -1,5 +1,7 @@
 package com.zhangzlyuyx.fastssm.util;
 
+import java.nio.charset.Charset;
+
 import cn.hutool.core.util.StrUtil;
 
 /**
@@ -79,5 +81,27 @@ public class StringUtils {
 			return StrUtil.indexedFormat(format.replace("'", "''"), args);
 		}
 		return format;
+	}
+	
+	/**
+	 * 字符串转字节数组
+	 * @param str 字符串
+	 * @return
+	 */
+	public static byte[] bytes(CharSequence str) {
+		return bytes(str, CharsetUtils.CHARSET_UTF_8);
+	}
+	
+	/**
+	 * 字符串转字节数组
+	 * @param str 字符串
+	 * @param charset 字符集
+	 * @return
+	 */
+	public static byte[] bytes(CharSequence str, Charset charset) {
+		if(charset == null) {
+			charset = CharsetUtils.CHARSET_UTF_8;
+		}
+		return StrUtil.bytes(str, charset);
 	}
 }
