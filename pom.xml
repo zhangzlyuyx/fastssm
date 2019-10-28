@@ -135,7 +135,7 @@
 	<distributionManagement>
 		<repository>
 			<id>rdc-releases</id>
-			<url>https://repo.rdc.aliyun.com/repository/103581-release-euPy0B/</url>
+			<url>https://repo.rdc.aliyun.com/repository/108810-release-fFQbP6/</url>
 		</repository>
 	</distributionManagement>
 	

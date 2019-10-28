@@ -1,15 +1,10 @@
 package com.zhangzlyuyx.fastssm.util;
 
-import java.nio.charset.Charset;
-
-import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.crypto.SecureUtil;
-import cn.hutool.crypto.asymmetric.RSA;
 import cn.hutool.crypto.asymmetric.Sign;
 import cn.hutool.crypto.asymmetric.SignAlgorithm;
 import cn.hutool.crypto.symmetric.AES;
 import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
-import cn.hutool.crypto.symmetric.SymmetricCrypto;
 
 /**
  * 加密/解密工具类
@@ -59,8 +54,8 @@ public class CryptoUtils {
     }
 	
 	/**
-	 * 生成aes(AES/ECB/PKCS5Padding)16位长度密钥
-	 * @return
+	 * 生成aes(AES/ECB/PKCS5Padding)密钥
+	 * @return 返回16位长度密钥
 	 */
 	public static byte[] generateAESKey() {
 		return SecureUtil.generateKey(SymmetricAlgorithm.AES.getValue()).getEncoded();
@@ -101,7 +96,7 @@ public class CryptoUtils {
 	
 	/**
 	 * aes(AES/ECB/PKCS5Padding)解密base64字符
-	 * @param data 密文bas64字符
+	 * @param dataBase64 密文bas64字符
 	 * @param key 16长度密钥
 	 * @return 返回明文
 	 */
@@ -136,7 +131,7 @@ public class CryptoUtils {
 	 * rsa 非对称加密公钥签名验证 
 	 * @param data 待验证的数据
 	 * @param publicKeyBase64 公钥base64字符
-	 * @param sign 签名base64结果
+	 * @param signBase64 签名base64结果
 	 * @return 返回验证结果 
 	 */
 	public static boolean verifySignMD5withRSA(String data, String publicKeyBase64, String signBase64) {

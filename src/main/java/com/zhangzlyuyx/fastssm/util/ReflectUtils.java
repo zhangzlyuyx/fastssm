@@ -10,6 +10,7 @@ public class ReflectUtils {
 
 	/**
 	 * 获取泛型参数类型
+	 * @param <T> 泛型类型
 	 * @param classz 输入类型
 	 * @return 返回泛型类型
 	 */
@@ -19,6 +20,7 @@ public class ReflectUtils {
 	
 	/**
 	 * 获取泛型参数类型
+	 * @param <T> 泛型类型
 	 * @param classz 输入 类型
 	 * @param index 索引
 	 * @return 返回泛型类型
