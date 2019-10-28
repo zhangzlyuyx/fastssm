@@ -12,9 +12,9 @@ import org.springframework.transaction.interceptor.NameMatchTransactionAttribute
 import org.springframework.transaction.interceptor.TransactionInterceptor;
 
 /**
- * aop切面方式事物配置
- * @Aspect
- * @Configuration
+ * aop切面方式事物基础配置
+ * {添加配置@Aspect}
+ * {添加配置@Configuration}
  *
  */
 public class BaseTransactionAdviceConfig {
@@ -37,7 +37,7 @@ public class BaseTransactionAdviceConfig {
 	
 	/**
 	 * Advice
-	 * @return
+	 * @return 返回事务拦截器
 	 */
 	@Bean
     public TransactionInterceptor txAdvice() {
@@ -47,7 +47,7 @@ public class BaseTransactionAdviceConfig {
 	
 	/**
 	 * Advisor
-	 * @return
+	 * @return 返回 advisor
 	 */
 	@Bean
     public Advisor txAdviceAdvisor() {
@@ -58,7 +58,7 @@ public class BaseTransactionAdviceConfig {
 	
 	/**
 	 * 获取事务属性
-	 * @return
+	 * @return 返回事务属性
 	 */
 	protected NameMatchTransactionAttributeSource getTransactionAttributeSource() {
 		
@@ -94,7 +94,7 @@ public class BaseTransactionAdviceConfig {
 	
 	/**
 	 * 获取切面切点表达式
-	 * @return
+	 * @return 返回表达式
 	 */
 	protected String getPointcutExpression() {
 		return "execution (* com.***.service.*.*(..))";

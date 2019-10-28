@@ -15,14 +15,15 @@ import com.zhangzlyuyx.fastssm.shiro.UserAuthenticationFilter;
 import com.zhangzlyuyx.fastssm.shiro.WeixinAuthenticationFilter;
 
 /**
- * @Configuration
+ * shiro基础配置
+ *{添加配置@Configuration}
  *
  */
 public class BaseShiroConfig {
 
 	/**
 	 * shiroRealm
-	 * @return
+	 * @return 返回 ShiroRealm
 	 */
 	@Bean("shiroRealm")
     public ShiroRealm shiroRealm() {
@@ -31,8 +32,8 @@ public class BaseShiroConfig {
 	
 	/**
 	 * securityManager
-	 * @param shiroRealm
-	 * @return
+	 * @param shiroRealm shiroRealm
+	 * @return 返回事务管理
 	 */
 	@Bean("securityManager")
     public DefaultWebSecurityManager securityManager(@Qualifier("shiroRealm") ShiroRealm shiroRealm) {
@@ -44,7 +45,7 @@ public class BaseShiroConfig {
 	/**
 	 * shiroFilterFactory
 	 * @param securityManager 事务管理
-	 * @return
+	 * @return 返回 shiroFilterFactory
 	 */
 	 @Bean("shiroFilterFactory")
 	 public ShiroFilterFactoryBean shiroFilterFactoryBean(@Qualifier("securityManager") SecurityManager securityManager) {
@@ -55,8 +56,8 @@ public class BaseShiroConfig {
 	 }
 	
 	/**
-	 * 创建 过滤器链接定义
-	 * @return
+	 * 创建 过滤器路径定义
+	 * @return 返器过滤器定路径义
 	 */
 	protected Map<String, String> createFilterChainDefinitionMap(){
 		Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
@@ -74,8 +75,8 @@ public class BaseShiroConfig {
 	
 	/**
 	 * 创建 shiroFilterFactory
-	 * @param securityManager
-	 * @return
+	 * @param securityManager 事务管理
+	 * @return 返回 shiroFilterFactory
 	 */
 	protected ShiroFilterFactoryBean createShiroFilterFactory(SecurityManager securityManager) {
 		ShiroFilterFactoryBean shiroFilterFactory = new ShiroFilterFactoryBean();
@@ -100,7 +101,7 @@ public class BaseShiroConfig {
 	
 	/**
 	 * 创建用户登录过滤器
-	 * @return
+	 * @return 返回过滤器
 	 */
 	protected UserAuthenticationFilter createUserAuthenticationFilter() {
 		UserAuthenticationFilter userAuthenticationFilter = new UserAuthenticationFilter();
@@ -109,7 +110,7 @@ public class BaseShiroConfig {
 	
 	/**
 	 * 创建app登录过滤器
-	 * @return
+	 * @return 返回过滤器
 	 */
 	protected AppAuthenticationFilter createAppAuthenticationFilter() {
 		AppAuthenticationFilter appAuthenticationFilter = new AppAuthenticationFilter();
@@ -118,7 +119,7 @@ public class BaseShiroConfig {
 	
 	/**
 	 * 创建微信oauth登录过滤器
-	 * @return
+	 * @return 返回过滤器
 	 */
 	protected WeixinAuthenticationFilter createWeixinAuthenticationFilter() {
 		WeixinAuthenticationFilter weixinAuthenticationFilter = new WeixinAuthenticationFilter();

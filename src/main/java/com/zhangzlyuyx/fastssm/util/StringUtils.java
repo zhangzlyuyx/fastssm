@@ -86,7 +86,7 @@ public class StringUtils {
 	/**
 	 * 字符串转字节数组
 	 * @param str 字符串
-	 * @return
+	 * @return 返回字节数组
 	 */
 	public static byte[] bytes(CharSequence str) {
 		return bytes(str, CharsetUtils.CHARSET_UTF_8);
@@ -96,7 +96,7 @@ public class StringUtils {
 	 * 字符串转字节数组
 	 * @param str 字符串
 	 * @param charset 字符集
-	 * @return
+	 * @return 返回字节数组
 	 */
 	public static byte[] bytes(CharSequence str, Charset charset) {
 		if(charset == null) {

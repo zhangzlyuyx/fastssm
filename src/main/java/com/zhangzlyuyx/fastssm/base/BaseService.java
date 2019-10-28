@@ -15,7 +15,7 @@ public interface BaseService<T> {
 
 	/**
 	 * 获取 sqlSession
-	 * @return
+	 * @return 返回sql会话
 	 */
 	SqlSession getSqlSession();
 	
@@ -29,7 +29,7 @@ public interface BaseService<T> {
 	
 	/**
 	 * 获取服务器时间
-	 * @return
+	 * @return 返回服务器时间
 	 */
 	Date getDate();
 	
@@ -68,8 +68,10 @@ public interface BaseService<T> {
 	
 	/**
 	 * 查询实体列表
-	 * @param queryMap 查询条件
-	 * @return 返回集合
+	 * @param queryMap 查询条件 
+	 * @param page 页
+	 * @param rows 行
+	 * @return 返回实体集合
 	 */
 	List<T> select(Map<String, Object> queryMap, Integer page, Integer rows);
 	

@@ -34,7 +34,7 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
 	
 	/**
 	 * 获取当前sql会话
-	 * @return
+	 * @return 返回sql会话
 	 */
 	@Override
 	public SqlSession getSqlSession() {
@@ -74,7 +74,7 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
 	 * 查询单值
 	 * @param sql
 	 * @param resultType
-	 * @return
+	 * @return 返回结果
 	 */
 	@Override
 	public Object selectOne(String sql, Class<?> resultType) {
@@ -94,7 +94,7 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
 	
 	/**
 	 * 获取 mapper
-	 * @return
+	 * @return 返回 mapper
 	 */
 	public abstract com.zhangzlyuyx.fastssm.base.BaseMapper<T> getMapper();
 	
@@ -106,7 +106,7 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
 	/**
 	 * 获取实体类型
 	 * 
-	 * @return
+	 * @return 返回实体类型
 	 */
 	@SuppressWarnings("unchecked")
 	public Class<T> getEntityClass() {
@@ -123,7 +123,7 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
 	/**
 	 * 创建 Example
 	 * 
-	 * @return
+	 * @return 返回 Example
 	 */
 	@Override
 	public Example createExample() {
@@ -135,7 +135,7 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
 	 * 创建 Example
 	 * 
 	 * @param queryMap
-	 * @return
+	 * @return 返回 Example
 	 */
 	@Override
 	public Example createExample(Map<String, Object> queryMap) {
@@ -156,7 +156,7 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
 	/**
 	 * 创建 Example
 	 * @param pageQuery
-	 * @return
+	 * @return 返回 Example
 	 */
 	public Example createExample(PageQuery pageQuery) {
 		Example example = new Example(this.getEntityClass());
@@ -185,9 +185,9 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
 	
 	/**
 	 * criteria 操作处理
-	 * @param example
-	 * @param criteriaNew
-	 * @param condition
+	 * @param example example
+	 * @param criteriaNew 新的criteria
+	 * @param condition 条件 
 	 */
 	protected void criteriaOperator(Example example, Criteria criteriaNew, PageCondition condition) {
 		if(condition == null) {
@@ -241,8 +241,6 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
 	
 	/**
 	 * 根据实体条件查询实体列表
-	 * @param record
-	 * @return
 	 */
 	@Override
 	public List<T> select(T record){
