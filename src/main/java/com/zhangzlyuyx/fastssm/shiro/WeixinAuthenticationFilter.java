@@ -14,6 +14,8 @@ import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.apache.shiro.web.servlet.ShiroHttpServletRequest;
 import org.apache.shiro.web.util.WebUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -21,7 +23,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.zhangzlyuyx.fastssm.base.BaseAuthenticationService;
+import com.zhangzlyuyx.fastssm.util.LogUtils;
 
 /**
  * 微信 OAuth 2.0 过滤器
@@ -32,6 +36,10 @@ public class WeixinAuthenticationFilter extends FormAuthenticationFilter {
 	public static String NAME_USER_TYPE = "weixin";
 	
 	public static String NAME_OPENID = "openid";
+	
+	public static String NAME_ACCESSTOKEN = "accessToken";
+	
+	public static String NAME_USERINFO = "userInfo";
 	
 	/**
 	 * 用户类型
@@ -71,9 +79,14 @@ public class WeixinAuthenticationFilter extends FormAuthenticationFilter {
 	private static String OATUH2_ACCESS_TOKEN_URL = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code";
 	
 	/**
+	 *  微信 OAuth 2.0 拉取用户信息(需scope为 snsapi_userinfo)
+	 */
+	private static String OATUH2_USERINFO_URL = "https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN";
+	
+	/**
 	 * 公众号的唯一标识
 	 */
-	private String appId;
+	protected String appId;
 	
 	public void setAppId(String appId) {
 		this.appId = appId;
@@ -82,7 +95,7 @@ public class WeixinAuthenticationFilter extends FormAuthenticationFilter {
 	/**
 	 * 公众号的appsecret
 	 */
-	private String appSecret;
+	protected String appSecret;
 	
 	public void setAppSecret(String appSecret) {
 		this.appSecret = appSecret;
@@ -91,7 +104,7 @@ public class WeixinAuthenticationFilter extends FormAuthenticationFilter {
 	/**
 	 * 重定向后会带上state参数，开发者可以填写a-zA-Z0-9的参数值，最多128字节
 	 */
-	private String state = "weixin";
+	protected String state = "weixin";
 	
 	public void setState(String state) {
 		this.state = state;
@@ -100,10 +113,37 @@ public class WeixinAuthenticationFilter extends FormAuthenticationFilter {
 	/**
 	 * 应用授权作用域。
 	 */
-	private String scope = "snsapi_base";
+	protected String scope = "snsapi_base";
 	
 	public void setScope(String scope) {
 		this.scope = scope;
+	}
+	
+	/**
+	 * accessToken 名称
+	 */
+	protected String accessTokenName = NAME_ACCESSTOKEN;
+	
+	public void setAccessTokenName(String accessTokenName) {
+		this.accessTokenName = accessTokenName;
+	}
+	
+	/**
+	 * openid 名称
+	 */
+	protected String openIdName = NAME_OPENID;
+	
+	public void setOpenIdName(String openIdName) {
+		this.openIdName = openIdName;
+	}
+	
+	/**
+	 * userInfo 名称
+	 */
+	protected String userInfoName = NAME_USERINFO;
+	
+	public void setUserInfoName(String userInfoName) {
+		this.userInfoName = userInfoName;
 	}
 	
 	@Override
@@ -154,13 +194,16 @@ public class WeixinAuthenticationFilter extends FormAuthenticationFilter {
 			super.redirectToLogin(request, response);
 			return;
 		}
+		//获取用户信息
+		Map<String, Object> userInfoMap = this.getUserInfo(accessTokenMap.get("access_token").toString(), accessTokenMap.get("openid").toString());
 		//获取openid
 		String openid = accessTokenMap.get("openid").toString();
 		ShiroToken token = new ShiroToken();
 		token.setUserType(this.userType);
-		token.getRequestParams().put("code", code);
-		token.getRequestParams().put("state", state);
-		token.getRequestParams().put(NAME_OPENID, openid);
+		token.getRequestParams().put("redirect", requestUrl);
+		token.getRequestParams().put(this.openIdName, openid);
+		token.getRequestParams().put(this.accessTokenName, JSON.toJSONString(accessTokenMap));
+		token.getRequestParams().put(this.userInfoName, JSON.toJSONString(userInfoMap));
 		//获取证认信息
 		ShiroToken authenticationInfo = this.getAuthenticationService(request.getServletContext()).getAuthenticationInfo(token);
 		if(authenticationInfo == null) {
@@ -200,19 +243,45 @@ public class WeixinAuthenticationFilter extends FormAuthenticationFilter {
 	 * @param code 网页授权重定向的code参数
 	 * @return
 	 */
-	private Map<String, Object> getOAuthAccessToken(String code){
+	protected Map<String, Object> getOAuthAccessToken(String code){
 		String url = String.format(OATUH2_ACCESS_TOKEN_URL, this.appId, this.appSecret, code);
 		Map<String, Object> map = new HashMap<>();
 		try {
 			RestTemplate restTemplate = new RestTemplate();
-			ResponseEntity<Map> exchange = restTemplate.getForEntity(url, Map.class);
-			map = exchange.getBody();
+			ResponseEntity<String> exchange = restTemplate.getForEntity(url, String.class);
+			String json = exchange.getBody();
+			LogUtils.info(this.getClass(), "OATUH2_ACCESS_TOKEN:{}", json);
+			map = (Map<String, Object>)JSON.parse(json);
 			return map;
 		} catch (Exception e) {
+			LogUtils.error(this.getClass(), "OATUH2_ACCESS_TOKEN:", e);
 			map.put("errcode", "-1");
 			map.put("errmsg", e.getMessage());
 			return map;
-		}finally{
+		}
+	}
+	
+	/**
+	 * 获取用户信息
+	 * @param accessToken
+	 * @param openId
+	 * @return
+	 */
+	protected Map<String, Object> getUserInfo(String accessToken, String openId){
+		String url = String.format(OATUH2_USERINFO_URL, accessToken, openId);
+		Map<String, Object> map = new HashMap<>();
+		try {
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<String> exchange = restTemplate.getForEntity(url, String.class);
+			String json = exchange.getBody();
+			LogUtils.info(this.getClass(), "OATUH2_USERINFO:{}", json);
+			map = (Map<String, Object>)JSON.parse(json);
+			return map;
+		} catch (Exception e) {
+			LogUtils.error(this.getClass(), "OATUH2_USERINFO:", e);
+			map.put("errcode", "-1");
+			map.put("errmsg", e.getMessage());
+			return map;
 		}
 	}
 }
