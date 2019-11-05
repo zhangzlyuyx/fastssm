@@ -11,7 +11,6 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.util.HtmlUtils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zhangzlyuyx.fastssm.mybatis.PageCondition;
@@ -43,7 +42,7 @@ public abstract class BaseController<T> {
         		if(StringUtils.isEmpty(text)) {
         			super.setValue(null);
         		} else {
-        			Date value = DateUtils.parse(text, "yyyy-MM-dd HH:mm:ss");
+        			Date value = DateUtils.parse(text);
         			super.setValue(value);
         		}
         	}
@@ -56,25 +55,6 @@ public abstract class BaseController<T> {
         		}
         		Date date = (Date)value;
         		return DateUtils.format(date, "yyyy-MM-dd HH:mm:ss");
-        	}
-        });
-		
-		//防止XSS攻击
-		binder.registerCustomEditor(String.class, new PropertyEditorSupport() {
-        	@Override
-        	public void setAsText(String text) throws IllegalArgumentException {
-        		if(text == null) {
-        			super.setValue(null);
-        		} else {
-        			String value = HtmlUtils.htmlEscape(text);
-        			super.setAsText(value);
-        		}
-        	}
-        	
-        	@Override
-        	public String getAsText() {
-        		Object value = super.getValue();
-        		return value != null ? value.toString() : "";
         	}
         });
 	}
