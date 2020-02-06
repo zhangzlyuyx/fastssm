@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.zhangzlyuyx</groupId>
 	<artifactId>fastssm</artifactId>
-	<version>1.19.1202</version>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 	<name>fastssm</name>
 	<url>https://github.com/zhangzlyuyx/fastssm</url>
@@ -21,7 +21,7 @@
 		<developer>
 			<id>zhangzlyuyx</id>
 			<name>zhangzlyuyx</name>
-			<email>admin@zhangzlyuyx.com</email>
+			<email>mail@zhangzlyuyx.com</email>
 			<roles>
                 <role>Java Development Engineer</role>
             </roles>
